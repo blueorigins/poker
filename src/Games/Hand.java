@@ -9,15 +9,14 @@ public class Hand {
         this.cards = cards;
     }
 
-    public String toString() {
-        StringBuilder hand = new StringBuilder();
-        for (Card card : cards) {
-            hand.append(card);
-        }
-        return hand.toString();
-    }
-
     public ArrayList<Card> getCards() {
         return cards;
+    }
+
+    @Override
+    public String toString() {
+        return "Hand{" +
+                "cards=" + cards +
+                '}';
     }
 }

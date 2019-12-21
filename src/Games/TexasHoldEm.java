@@ -12,7 +12,7 @@ public class TexasHoldEm extends Game {
     public TexasHoldEm(int playerCount) {
         this.playerCount = playerCount;
         for (int i = 0; i < playerCount; i++) {
-            this.players.add(new Player());
+            this.players.add(new Player(i));
         }
         this.deck = new Deck(52, this);
     }
@@ -20,8 +20,8 @@ public class TexasHoldEm extends Game {
     public void playGame() {
         Collections.shuffle(deck.getDeck());
         deck.deal(players);
-        for (Player player : players) {
-            System.out.println(player.getHand());
+        for (int i = 0; i < players.size(); i++) {
+            System.out.println(i + players.get(i).getHand().toString());
         }
         //bet
         //flop
@@ -32,10 +32,33 @@ public class TexasHoldEm extends Game {
         //bet
         //river
         deal(1,1);
-        HandEvaluator h = new HandEvaluator(players.get(0).getHand(), communityCards);
-        if (h.straight()) {
-            System.out.println("Straight");
+        System.out.println(communityCards);
+        for (int i = 0; i < players.size(); i++) {
+            HandEvaluator eval = new HandEvaluator(players.get(i).getHand(), communityCards);
+            ArrayList<HandRank> handRanks = new ArrayList<>();
+            handRanks.add(eval.highCard());
+            handRanks.add(eval.pairs());
+            handRanks.add(eval.ofAKind());
+            handRanks.add(eval.fullHouse());
+            handRanks.add(eval.straight());
+            handRanks.add(eval.flush());
+            handRanks.add(eval.straightFlush());
+            players.get(i).setHandRank(handRanks);
         }
+
+        for (Player play : players) {
+            System.out.println(play.getHandRank());
+        }
+
+        Player winningPlayer = players.get(0);
+        for (Player playboy : players) {
+            if (Collections.max(playboy.getHandRank()).compareTo(Collections.max(winningPlayer.getHandRank())) > 0) {
+                winningPlayer = playboy;
+            }
+        }
+
+        System.out.println(winningPlayer.toString());
+
     }
 
     public void deal(int burn, int comms) {
@@ -44,7 +67,6 @@ public class TexasHoldEm extends Game {
         for (Card c : flop) {
             communityCards.add(c);
         }
-        System.out.println(communityCards);
     }
 
     public void reset() {
